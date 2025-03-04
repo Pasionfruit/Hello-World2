@@ -6,6 +6,10 @@ app.get("/", (req, res) => {
     res.send("Hello, World from Render!");
 });
 
+app.get("/admin", (req, res) => {
+    res.send("Admin page")
+})
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
