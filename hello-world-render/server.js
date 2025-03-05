@@ -25,6 +25,7 @@ app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "adm
 app.get("/add", (req, res) => res.sendFile(path.join(__dirname, "public", "addListing.html")));
 app.get("/update", (req, res) => res.sendFile(path.join(__dirname, "public", "manageListing.html")));
 app.get("/listing", (req, res) => res.sendFile(path.join(__dirname, "public", "listing.html")));
+app.get("/format", (req, res) => res.sendFile(path.join(__dirname, "public", "format.html")));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
