@@ -35,6 +35,40 @@ app.get("/api/internet-listings", async (req, res) => {
     }
 });
 
+// Handle adding a new listing
+app.post('/api/add-listing', async (req, res) => {
+    const { heading, image_url, speed, description, price, offer_url } = req.body;
+
+    // Validate input (optional)
+    if (!heading || !image_url || !speed || !description || !price || !offer_url) {
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+
+    // Add the listing to your database (e.g., using PostgreSQL)
+    try {
+        const query = `
+            INSERT INTO "internet-listings" (heading, image_url, speed, description, price, offer_url) 
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *;
+        `;
+        const values = [heading, image_url, speed, description, price, offer_url];
+        const result = await client.query(query, values);
+
+        // Respond with the newly added listing
+        res.json({ success: true, message: 'Listing added successfully!', listing: result.rows[0] });
+    } catch (error) {
+        console.error('Error adding listing:', error);
+        res.status(500).json({ success: false, message: 'Failed to add listing.' });
+    }
+});
+
+// Handle edit listing page
+app.get('/edit-listing/:id', (req, res) => {
+    const listingId = req.params.id;  
+    res.sendFile(path.join(__dirname, 'public', 'editListing.html'));
+});
+
+
 // Get a specific listing by ID
 app.get('/api/internet-listings/:id', async (req, res) => {
     const listingId = parseInt(req.params.id);  // Get the ID from the URL
@@ -121,37 +155,4 @@ app.post('/save-card-style', (req, res) => {
             console.error('Error saving CSS:', error);
             res.status(500).send({ message: 'Failed to save CSS' });
         });
-});
-
-// Handle adding a new listing
-app.post('/api/add-listing', async (req, res) => {
-    const { heading, image_url, speed, description, price, offer_url } = req.body;
-
-    // Validate input (optional)
-    if (!heading || !image_url || !speed || !description || !price || !offer_url) {
-        return res.status(400).json({ success: false, message: 'All fields are required.' });
-    }
-
-    // Add the listing to your database (e.g., using PostgreSQL)
-    try {
-        const query = `
-            INSERT INTO "internet-listings" (heading, image_url, speed, description, price, offer_url) 
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING *;
-        `;
-        const values = [heading, image_url, speed, description, price, offer_url];
-        const result = await client.query(query, values);
-
-        // Respond with the newly added listing
-        res.json({ success: true, message: 'Listing added successfully!', listing: result.rows[0] });
-    } catch (error) {
-        console.error('Error adding listing:', error);
-        res.status(500).json({ success: false, message: 'Failed to add listing.' });
-    }
-});
-
-// Handle edit listing page
-app.get('/edit-listing/:id', (req, res) => {
-    const listingId = req.params.id;  
-    res.sendFile(path.join(__dirname, 'public', 'editListing.html'));
 });
