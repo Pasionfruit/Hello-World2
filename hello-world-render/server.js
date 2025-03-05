@@ -20,11 +20,11 @@ app.get("/api/listings", (req, res) => {
     res.json(listings);
 });
 
-app.get("/", (req, res) => res.redirect("/listing"));
+app.get("/", (req, res) => res.redirect("/internet-listing"));
 app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
 app.get("/add", (req, res) => res.sendFile(path.join(__dirname, "public", "addListing.html")));
 app.get("/update", (req, res) => res.sendFile(path.join(__dirname, "public", "manageListing.html")));
-app.get("/listing", (req, res) => res.sendFile(path.join(__dirname, "public", "listing.html")));
+app.get("/internet-listing", (req, res) => res.sendFile(path.join(__dirname, "public", "internetListing.html")));
 app.get("/format", (req, res) => res.sendFile(path.join(__dirname, "public", "format.html")));
 
 app.listen(PORT, () => {
