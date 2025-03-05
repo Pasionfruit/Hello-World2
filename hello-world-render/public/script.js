@@ -7,41 +7,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Log the data to check the structure
         console.log(listings); // This will show you the actual structure of the listings
 
-        // Create and style the container to hold listings
-        const listingsContainer = document.createElement("div");
-        listingsContainer.style.display = "flex";
-        listingsContainer.style.flexWrap = "wrap";
-        listingsContainer.style.gap = "20px";
-        listingsContainer.style.padding = "20px";
-
-        // Loop through the listings and create a card for each
-        listings.forEach(listing => {
-            const card = document.createElement("div");
-
-            // Apply styles to the card
-            card.style.border = "1px solid #ddd";
-            card.style.padding = "10px";
-            card.style.borderRadius = "8px";
-            card.style.width = "200px";
-            card.style.backgroundColor = "#f9f9f9";
-            card.style.boxShadow = "0px 2px 4px rgba(0, 0, 0, 0.1)";
-            card.style.transition = "all 0.3s ease";
-
-            // Insert content dynamically
-            card.innerHTML = `
-                <h3>${listing.heading}</h3>
-                <img src="${listing.image_url}" alt="${listing.heading}" style="width: 100%; height: 100px; object-fit: cover;">
-                <p>${listing.description}</p>
-                <p>Speed: ${listing.speed}</p>
-                <p>Price: $${listing.price}</p>
-                <a href="${listing.offer_url}" target="_blank">View Offer</a>
-            `;
-
-            listingsContainer.appendChild(card);
-        });
-
-        // Append the listings to the page
-        document.body.appendChild(listingsContainer);
+        // Optionally, you can process or display the data in another way, like appending to a table
+        // For example, you can send this data to a table or use it elsewhere
     } catch (error) {
         console.error("Error loading listings:", error);
         document.body.innerHTML += "<p>Failed to load listings.</p>";

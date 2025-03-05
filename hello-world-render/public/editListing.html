@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Listing</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Edit Listing</h1>
+    <button onclick="window.location.href='/admin'">Return</button>
+
+    <form id="listingForm">
+        <label for="heading">Title:</label>
+        <input type="text" id="heading" name="heading" required>
+
+        <label for="image_url">Image URL:</label>
+        <input type="text" id="image_url" name="image_url" required>
+
+        <label for="speed">Speed:</label>
+        <input type="text" id="speed" name="speed" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required>
+
+        <label for="offer_Url">Offer URL:</label>
+        <input type="text" id="offer_Url" name="offer_Url" required>
+
+        <button type="submit" id="updateButton">Update</button>
+        <button type="button" id="deleteButton">Delete</button>
+    </form>
+
+    <script>
+        const pathParts = window.location.pathname.split('/');
+        const listingId = pathParts[pathParts.length - 1]; // This will get the last part, which is the ID
+
+        // Log for debugging
+        console.log('Listing ID:', listingId);
+
+        // Check if the listingId is valid
+        if (!listingId || isNaN(listingId)) {
+            console.error("Invalid or missing listing ID.");
+            alert("Invalid or missing listing ID.");
+            window.location.href = '/admin';  // Redirect to the admin page
+        } else {
+            fetchListingData();  // Proceed to fetch the listing data
+        }
+
+        async function fetchListingData() {
+            try {
+                const response = await fetch(`/api/internet-listings/${listingId}`);
+                const listing = await response.json();
+
+                console.log('Fetched Listing:', listing);  // Check what is returned from the API
+
+                // Populate the form with the existing data
+                document.getElementById('heading').value = listing.heading;
+                document.getElementById('image_url').value = listing.image_url;
+                document.getElementById('speed').value = listing.speed;
+                document.getElementById('description').value = listing.description;
+                document.getElementById('price').value = listing.price;
+                document.getElementById('offer_Url').value = listing.offer_url;
+            } catch (error) {
+                console.error("Error fetching listing data:", error);
+                alert("Failed to load listing data.");
+            }
+        }
+
+        // Function to handle updating the listing
+        document.getElementById('listingForm').addEventListener('submit', async (event) => {
+            event.preventDefault();  // Prevent the form from submitting normally
+
+            const formData = new FormData(event.target);
+            const updatedListing = {
+                heading: formData.get('heading'),
+                image_url: formData.get('image_url'),
+                speed: formData.get('speed'),
+                description: formData.get('description'),
+                price: formData.get('price'),
+                offer_url: formData.get('offer_url'),
+            };
+
+            try {
+                const response = await fetch(`/api/internet-listings/${listingId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedListing),
+                });
+
+                if (response.ok) {
+                    alert('Listing updated successfully!');
+                    window.location.href = '/admin';  // Redirect back to the admin page
+                } else {
+                    alert('Failed to update the listing.');
+                }
+            } catch (error) {
+                console.error("Error updating the listing:", error);
+                alert("Failed to update the listing.");
+            }
+        });
+
+        // Function to handle deleting the listing
+        document.getElementById('deleteButton').addEventListener('click', async () => {
+            try {
+                const response = await fetch(`/api/internet-listings/${listingId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    alert('Listing deleted successfully!');
+                    window.location.href = '/admin';  // Redirect back to the admin page
+                } else {
+                    alert('Failed to delete the listing.');
+                }
+            } catch (error) {
+                console.error("Error deleting the listing:", error);
+                alert("Failed to delete the listing.");
+            }
+        });
+
+        // Fetch the listing data when the page loads
+        fetchListingData();
+    </script>
+</body>
+</html>

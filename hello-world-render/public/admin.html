@@ -7,8 +7,61 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <button onclick="window.location.href='/update'">Edit Listing</button>
+    <h1>Admin Panel</h1>
     <button onclick="window.location.href='/add'">Add Listing</button>
     <button onclick="window.location.href='/format'">Format Cards</button>
+    <h2>Existing Internet Listings</h2>
+    
+    <!-- Table for displaying listings -->
+    <table id="listing-table" border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Image_url</th>
+                <th>Speed</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Offer URL</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="listing-container"></tbody>
+    </table>
+
+    <script>
+        // Fetch the listings from the server and display them in the table
+        fetch('/api/internet-listings')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('listing-container');
+                container.innerHTML = ''; // Clear the container before adding new listings
+
+                // Loop through each listing and create table rows for it
+                data.forEach(listing => {
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${listing.heading}</td>
+                        <td>${listing.image_url}</td>
+                        <td>${listing.speed}</td>
+                        <td>${listing.description}</td>
+                        <td>$${listing.price}</td>
+                        <td><a href="${listing.offer_url}" target="_blank">${listing.offer_url}</a></td>
+                        <td><button onclick="editListing(${listing.id})">Edit Listing</button></td>
+                    `;
+
+                    container.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching listings:', error);
+            });
+
+        // Function to handle editing a listing
+        function editListing(listingId) {
+            // Redirect to the edit page, passing the listing ID in the URL path
+            window.location.href = `/edit-listing/${listingId}`;
+        }
+    </script>
 </body>
 </html>

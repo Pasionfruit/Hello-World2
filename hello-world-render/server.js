@@ -32,11 +32,28 @@ app.get("/api/internet-listings", async (req, res) => {
     }
 });
 
+// Get a specific listing by ID
+app.get('/api/internet-listings/:id', async (req, res) => {
+    const listingId = parseInt(req.params.id);  // Get the ID from the URL
+
+    try {
+        const result = await client.query('SELECT * FROM "internet-listings" WHERE id = $1', [listingId]);
+
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);  // Send the listing as a JSON response
+        } else {
+            res.status(404).send('Listing not found');
+        }
+    } catch (error) {
+        console.error("Error fetching listing data:", error);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
 // Serve HTML pages
 app.get("/", (req, res) => res.redirect("/internet-listing"));
 app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
 app.get("/add", (req, res) => res.sendFile(path.join(__dirname, "public", "addListing.html")));
-app.get("/update", (req, res) => res.sendFile(path.join(__dirname, "public", "manageListing.html")));
 app.get("/internet-listing", (req, res) => res.sendFile(path.join(__dirname, "public", "internetListing.html")));
 app.get("/format", (req, res) => res.sendFile(path.join(__dirname, "public", "format.html")));
 
@@ -87,4 +104,10 @@ app.post('/api/add-listing', async (req, res) => {
         console.error('Error adding listing:', error);
         res.status(500).json({ success: false, message: 'Failed to add listing.' });
     }
+});
+
+// Handle edit listing page
+app.get('/edit-listing/:id', (req, res) => {
+    const listingId = req.params.id;  
+    res.sendFile(path.join(__dirname, 'public', 'editListing.html'));
 });
