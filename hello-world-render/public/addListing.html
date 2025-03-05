@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Add a New Listing</h1>
-    <button onclick="window.location.href='/admin'"> Return </button>
+    <button onclick="window.location.href='/admin'">Return</button>
     <form id="listingForm">
         <label for="heading">Title:</label>
         <input type="text" id="heading" name="heading" required>
@@ -30,5 +30,43 @@
 
         <button type="submit">Add Listing</button>
     </form>
+
+    <script>
+        // Form submission handler
+        document.getElementById('listingForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Gather form data
+            const formData = new FormData(this);
+
+            // Create an object to send the data as JSON
+            const listingData = {};
+            formData.forEach((value, key) => {
+                listingData[key] = value;
+            });
+
+            // Send the data to the backend (replace with your API endpoint)
+            fetch('/api/add-listing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(listingData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Listing added successfully!');
+                    window.location.href = '/admin'; // Redirect to admin page
+                } else {
+                    alert('Failed to add listing. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error processing your request.');
+            });
+        });
+    </script>
 </body>
 </html>

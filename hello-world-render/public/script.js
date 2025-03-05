@@ -17,18 +17,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Loop through the listings and create a card for each
         listings.forEach(listing => {
             const card = document.createElement("div");
+
+            // Apply styles to the card
             card.style.border = "1px solid #ddd";
             card.style.padding = "10px";
             card.style.borderRadius = "8px";
             card.style.width = "200px";
+            card.style.backgroundColor = "#f9f9f9";
+            card.style.boxShadow = "0px 2px 4px rgba(0, 0, 0, 0.1)";
+            card.style.transition = "all 0.3s ease";
 
+            // Insert content dynamically
             card.innerHTML = `
                 <h3>${listing.heading}</h3>
                 <img src="${listing.image_url}" alt="${listing.heading}" style="width: 100%; height: 100px; object-fit: cover;">
                 <p>${listing.description}</p>
                 <p>Speed: ${listing.speed}</p>
                 <p>Price: $${listing.price}</p>
-                <a href="${listing.offer_Url}" target="_blank">View Offer</a>
+                <a href="${listing.offer_url}" target="_blank">View Offer</a>
             `;
 
             listingsContainer.appendChild(card);
@@ -41,3 +47,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.body.innerHTML += "<p>Failed to load listings.</p>";
     }
 });
+
+async function loadSavedCSS() {
+    try {
+        const response = await fetch('/get-card-style');
+        const data = await response.json();
+
+        const cssCode = data.customCSS;
+        if (cssCode) {
+            // Apply the saved CSS to all cards
+            const listingCards = document.querySelectorAll('.card');
+            listingCards.forEach(card => {
+                card.setAttribute('style', cssCode);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading saved CSS:', error);
+    }
+}
+
+// Load saved CSS when the page is loaded
+loadSavedCSS();

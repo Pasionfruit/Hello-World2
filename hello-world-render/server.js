@@ -43,3 +43,48 @@ app.get("/format", (req, res) => res.sendFile(path.join(__dirname, "public", "fo
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
+
+app.use(express.json());
+
+// Route to handle saving custom CSS for card styling
+app.post('/save-card-style', (req, res) => {
+    const { customCSS } = req.body;
+
+    // Save the custom CSS to the database (you can modify this to store it wherever you like)
+    const query = 'INSERT INTO card_styles (css_code) VALUES ($1) RETURNING id';
+    client.query(query, [customCSS])
+        .then(result => {
+            res.status(200).send({ message: 'CSS saved successfully' });
+        })
+        .catch(error => {
+            console.error('Error saving CSS:', error);
+            res.status(500).send({ message: 'Failed to save CSS' });
+        });
+});
+
+// Handle adding a new listing
+app.post('/api/add-listing', async (req, res) => {
+    const { heading, image_url, speed, description, price, offer_Url } = req.body;
+
+    // Validate input (optional)
+    if (!heading || !image_url || !speed || !description || !price || !offer_Url) {
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
+    }
+
+    // Add the listing to your database (e.g., using PostgreSQL)
+    try {
+        const query = `
+            INSERT INTO "internet-listings" (heading, image_url, speed, description, price, offer_url) 
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING *;
+        `;
+        const values = [heading, image_url, speed, description, price, offer_Url];
+        const result = await client.query(query, values);
+
+        // Respond with the newly added listing
+        res.json({ success: true, message: 'Listing added successfully!', listing: result.rows[0] });
+    } catch (error) {
+        console.error('Error adding listing:', error);
+        res.status(500).json({ success: false, message: 'Failed to add listing.' });
+    }
+});
