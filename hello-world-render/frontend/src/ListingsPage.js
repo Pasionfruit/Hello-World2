@@ -5,7 +5,7 @@ const ListingsPage = () => {
   const [listings, setListings] = useState([]);
 
   useEffect(() => {
-    fetch('/api/listings') // Calls backend
+    fetch('/api/internet-listings') // Calls backend
       .then(res => res.json())
       .then(data => setListings(data))
       .catch(err => console.error('Error fetching listings:', err));

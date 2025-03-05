@@ -1,20 +1,19 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
-const { Pool } = require("pg");
+const { Client } = require('pg');  // Only use Client here
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// PostgreSQL Connection Pool
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+// Create the PostgreSQL client instance
+const client = new Client({
+    connectionString: process.env.DATABASE_URL,  // Or specify your connection string here
     ssl: { rejectUnauthorized: false }
 });
 
-
-pool.connect()
+// Connect to the database
+client.connect()
     .then(() => console.log("Connected to PostgreSQL"))
     .catch(err => console.error("Connection error", err));
 
@@ -23,9 +22,9 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "frontend", "build")));
 
 // Get listings from the database
-app.get("/api/listings", async (req, res) => {
+app.get("/api/internet-listings", async (req, res) => {
     try {
-        const result = await pool.query("SELECT * FROM listings");
+        const result = await client.query('SELECT * FROM "internet-listings"');
         res.json(result.rows);
     } catch (error) {
         console.error(error);

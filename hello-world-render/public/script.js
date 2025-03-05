@@ -1,16 +1,20 @@
 document.addEventListener("DOMContentLoaded", async function () {
     try {
-        const response = await fetch("/api/listings");
+        // Fetch listings data from backend API
+        const response = await fetch("/api/internet-listings");
         const listings = await response.json();
 
-        const listingsContainer = document.getElementById("listings-container") || document.createElement("div");
-        listingsContainer.id = "listings-container";
-        listingsContainer.innerHTML = ""; // Clear existing content
+        // Log the data to check the structure
+        console.log(listings); // This will show you the actual structure of the listings
+
+        // Create and style the container to hold listings
+        const listingsContainer = document.createElement("div");
         listingsContainer.style.display = "flex";
         listingsContainer.style.flexWrap = "wrap";
         listingsContainer.style.gap = "20px";
         listingsContainer.style.padding = "20px";
 
+        // Loop through the listings and create a card for each
         listings.forEach(listing => {
             const card = document.createElement("div");
             card.style.border = "1px solid #ddd";
@@ -24,12 +28,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <p>${listing.description}</p>
                 <p>Speed: ${listing.speed}</p>
                 <p>Price: $${listing.price}</p>
-                <a href="${listing.offer_url}" target="_blank">View Offer</a>
+                <a href="${listing.offer_Url}" target="_blank">View Offer</a>
             `;
 
             listingsContainer.appendChild(card);
         });
 
+        // Append the listings to the page
         document.body.appendChild(listingsContainer);
     } catch (error) {
         console.error("Error loading listings:", error);
