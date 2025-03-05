@@ -3,7 +3,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         const response = await fetch("/api/listings");
         const listings = await response.json();
 
-        const listingsContainer = document.createElement("div");
+        const listingsContainer = document.getElementById("listings-container") || document.createElement("div");
+        listingsContainer.id = "listings-container";
+        listingsContainer.innerHTML = ""; // Clear existing content
         listingsContainer.style.display = "flex";
         listingsContainer.style.flexWrap = "wrap";
         listingsContainer.style.gap = "20px";
@@ -22,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <p>${listing.description}</p>
                 <p>Speed: ${listing.speed}</p>
                 <p>Price: $${listing.price}</p>
-                <a href="${listing.offer_Url}" target="_blank">View Offer</a>
+                <a href="${listing.offer_url}" target="_blank">View Offer</a>
             `;
 
             listingsContainer.appendChild(card);
