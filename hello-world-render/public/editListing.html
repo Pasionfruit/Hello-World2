@@ -27,7 +27,7 @@
         <input type="number" id="price" name="price" required>
 
         <label for="offer_Url">Offer URL:</label>
-        <input type="text" id="offer_Url" name="offer_Url" required>
+        <input type="text" id="offer_url" name="offer_url" required>
 
         <button type="submit" id="updateButton">Update</button>
         <button type="button" id="deleteButton">Delete</button>
@@ -62,7 +62,7 @@
                 document.getElementById('speed').value = listing.speed;
                 document.getElementById('description').value = listing.description;
                 document.getElementById('price').value = listing.price;
-                document.getElementById('offer_Url').value = listing.offer_url;
+                document.getElementById('offer_url').value = listing.offer_url;
             } catch (error) {
                 console.error("Error fetching listing data:", error);
                 alert("Failed to load listing data.");

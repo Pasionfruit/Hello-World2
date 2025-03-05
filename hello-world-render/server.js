@@ -6,6 +6,9 @@ const { Client } = require('pg');  // Only use Client here
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Create the PostgreSQL client instance
 const client = new Client({
     connectionString: process.env.DATABASE_URL,  // Or specify your connection string here
@@ -50,6 +53,31 @@ app.get('/api/internet-listings/:id', async (req, res) => {
     }
 });
 
+app.put('/api/internet-listings/:id', async (req, res) => {
+    const listingId = parseInt(req.params.id);
+    const { heading, image_url, speed, description, price, offer_url } = req.body;
+
+    try {
+        const query = `
+            UPDATE "internet-listings" 
+            SET heading = $1, image_url = $2, speed = $3, description = $4, price = $5, offer_url = $6 
+            WHERE id = $7
+            RETURNING *;
+        `;
+        const values = [heading, image_url, speed, description, price, offer_url, listingId];
+        const result = await client.query(query, values);
+
+        if (result.rows.length > 0) {
+            res.json({ success: true, message: 'Listing updated successfully!', listing: result.rows[0] });
+        } else {
+            res.status(404).json({ error: 'Listing not found' });
+        }
+    } catch (error) {
+        console.error("Error updating the listing:", error);
+        res.status(500).json({ error: "Failed to update the listing" });
+    }
+});
+
 // Delete a specific listing by ID
 app.delete('/api/internet-listings/:id', async (req, res) => {
     const listingId = parseInt(req.params.id);  // Get the ID from the URL
@@ -79,8 +107,6 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
-app.use(express.json());
-
 // Route to handle saving custom CSS for card styling
 app.post('/save-card-style', (req, res) => {
     const { customCSS } = req.body;
@@ -99,10 +125,10 @@ app.post('/save-card-style', (req, res) => {
 
 // Handle adding a new listing
 app.post('/api/add-listing', async (req, res) => {
-    const { heading, image_url, speed, description, price, offer_Url } = req.body;
+    const { heading, image_url, speed, description, price, offer_url } = req.body;
 
     // Validate input (optional)
-    if (!heading || !image_url || !speed || !description || !price || !offer_Url) {
+    if (!heading || !image_url || !speed || !description || !price || !offer_url) {
         return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
@@ -113,7 +139,7 @@ app.post('/api/add-listing', async (req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *;
         `;
-        const values = [heading, image_url, speed, description, price, offer_Url];
+        const values = [heading, image_url, speed, description, price, offer_url];
         const result = await client.query(query, values);
 
         // Respond with the newly added listing
