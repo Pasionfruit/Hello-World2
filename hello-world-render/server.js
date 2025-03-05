@@ -50,6 +50,24 @@ app.get('/api/internet-listings/:id', async (req, res) => {
     }
 });
 
+// Delete a specific listing by ID
+app.delete('/api/internet-listings/:id', async (req, res) => {
+    const listingId = parseInt(req.params.id);  // Get the ID from the URL
+
+    try {
+        const result = await client.query('DELETE FROM "internet-listings" WHERE id = $1 RETURNING *', [listingId]);
+
+        if (result.rowCount > 0) {
+            res.status(200).json({ message: 'Listing deleted successfully!' });
+        } else {
+            res.status(404).json({ message: 'Listing not found' });
+        }
+    } catch (error) {
+        console.error("Error deleting listing:", error);
+        res.status(500).json({ message: 'Failed to delete the listing' });
+    }
+});
+
 // Serve HTML pages
 app.get("/", (req, res) => res.redirect("/internet-listing"));
 app.get("/admin", (req, res) => res.sendFile(path.join(__dirname, "public", "admin.html")));
