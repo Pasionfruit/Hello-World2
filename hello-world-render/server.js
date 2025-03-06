@@ -37,7 +37,7 @@ app.get("/api/internet-listings", async (req, res) => {
 
 // Handle adding a new listing
 app.post('/api/add-listing', async (req, res) => {
-    const { heading, image_url, speed, description, price, offer_url } = req.body;
+    const { heading, image_url, speed, description, price, offer_url, card_style } = req.body;
 
     // Validate input (optional)
     if (!heading || !image_url || !speed || !description || !price || !offer_url) {
@@ -47,11 +47,11 @@ app.post('/api/add-listing', async (req, res) => {
     // Add the listing to your database (e.g., using PostgreSQL)
     try {
         const query = `
-            INSERT INTO "internet-listings" (heading, image_url, speed, description, price, offer_url) 
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO "internet-listings" (heading, image_url, speed, description, price, offer_url, card_style) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *;
         `;
-        const values = [heading, image_url, speed, description, price, offer_url];
+        const values = [heading, image_url, speed, description, price, offer_url, card_style];
         const result = await client.query(query, values);
 
         // Respond with the newly added listing
@@ -89,16 +89,16 @@ app.get('/api/internet-listings/:id', async (req, res) => {
 
 app.put('/api/internet-listings/:id', async (req, res) => {
     const listingId = parseInt(req.params.id);
-    const { heading, image_url, speed, description, price, offer_url } = req.body;
+    const { heading, image_url, speed, description, price, offer_url, card_style } = req.body;
 
     try {
         const query = `
             UPDATE "internet-listings" 
-            SET heading = $1, image_url = $2, speed = $3, description = $4, price = $5, offer_url = $6 
-            WHERE id = $7
+            SET heading = $1, image_url = $2, speed = $3, description = $4, price = $5, offer_url = $6, card_style = $7
+            WHERE id = $8
             RETURNING *;
         `;
-        const values = [heading, image_url, speed, description, price, offer_url, listingId];
+        const values = [heading, image_url, speed, description, price, offer_url, listingId, card_style];
         const result = await client.query(query, values);
 
         if (result.rows.length > 0) {
@@ -139,20 +139,4 @@ app.get("/format", (req, res) => res.sendFile(path.join(__dirname, "public", "fo
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
-});
-
-// Route to handle saving custom CSS for card styling
-app.post('/save-card-style', (req, res) => {
-    const { customCSS } = req.body;
-
-    // Save the custom CSS to the database (you can modify this to store it wherever you like)
-    const query = 'INSERT INTO card_styles (css_code) VALUES ($1) RETURNING id';
-    client.query(query, [customCSS])
-        .then(result => {
-            res.status(200).send({ message: 'CSS saved successfully' });
-        })
-        .catch(error => {
-            console.error('Error saving CSS:', error);
-            res.status(500).send({ message: 'Failed to save CSS' });
-        });
 });

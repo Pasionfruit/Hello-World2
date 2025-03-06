@@ -17,7 +17,7 @@
                 const listings = await response.json();
 
                 // Log the data to check the structure
-                console.log(listings); // This will show you the actual structure of the listings
+                console.log(listings);
 
                 // Get the container to hold the listings
                 const listingsContainer = document.getElementById("listings-container");
@@ -26,14 +26,10 @@
                 listings.forEach(listing => {
                     const card = document.createElement("div");
 
-                    // Apply styles to the card
-                    card.style.border = "1px solid #ddd";
-                    card.style.padding = "10px";
-                    card.style.borderRadius = "8px";
-                    card.style.width = "200px";
-                    card.style.backgroundColor = "#f9f9f9";
-                    card.style.boxShadow = "0px 2px 4px rgba(0, 0, 0, 0.1)";
-                    card.style.transition = "all 0.3s ease";
+                    // Apply styles dynamically from listing.css_styles
+                    if (listing.card_style) {
+                        card.style.cssText = listing.card_style;
+                    }
 
                     // Insert content dynamically
                     card.innerHTML = `
