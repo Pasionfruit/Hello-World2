@@ -40,7 +40,7 @@ app.post('/api/add-listing', async (req, res) => {
     const { heading, image_url, speed, description, price, offer_url, card_style } = req.body;
 
     // Validate input (optional)
-    if (!heading || !image_url || !speed || !description || !price || !offer_url) {
+    if (!heading || !image_url || !speed || !description || !price || !offer_url || !card_style) {
         return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
@@ -98,7 +98,7 @@ app.put('/api/internet-listings/:id', async (req, res) => {
             WHERE id = $8
             RETURNING *;
         `;
-        const values = [heading, image_url, speed, description, price, offer_url, listingId, card_style];
+        const values = [heading, image_url, speed, description, price, offer_url, card_style, listingId];
         const result = await client.query(query, values);
 
         if (result.rows.length > 0) {
